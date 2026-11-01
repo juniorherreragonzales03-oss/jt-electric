@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>JT Electric</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0b1220;--panel:#151f30;--panel2:#1d2a3d;--text:#f5f7fb;--muted:#aab6c8;--yellow:#f5b82e;--green:#36c98f;--line:#2b3a50}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:22px 18px 16px;background:linear-gradient(135deg,#172338,#0b1220);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:52px;height:52px;border-radius:15px;background:var(--yellow);display:grid;place-items:center;color:#111827;font-size:28px;font-weight:900}
+h1{font-size:23px;margin:0}header p{margin:3px 0 0;color:var(--muted);font-size:13px}
+main{max-width:760px;margin:auto;padding:16px 14px 100px}.welcome{background:var(--panel);border:1px solid var(--line);padding:16px;border-radius:18px}
+.welcome h2{margin:0 0 5px;font-size:19px}.welcome p{margin:0;color:var(--muted);font-size:14px}
+.voice{display:flex;gap:10px;margin-top:14px}.voice button{flex:1}
+button,.btn{border:0;border-radius:12px;padding:12px 14px;font:600 14px system-ui;cursor:pointer;background:var(--yellow);color:#111827}
+button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+button.danger{background:#642e36;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;text-align:left;color:var(--text);min-height:92px}
+.tile b{display:block;margin-top:8px}.tile small{color:var(--muted)}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;margin-top:14px}
+h3{margin:0 0 12px;font-size:17px}.muted{color:var(--muted);font-size:13px}
+input,textarea,select{width:100%;background:#0d1726;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;margin:5px 0 10px;font:inherit}
+textarea{min-height:75px;resize:vertical}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.item strong{display:block}.item small{color:var(--muted)}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.actions button{padding:8px 10px;font-size:12px}
+.hidden{display:none!important}.tag{display:inline-block;padding:3px 8px;border-radius:99px;background:#26384c;color:#c8d7e9;font-size:11px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#101a29;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 5px calc(10px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:var(--muted);padding:8px;font-size:12px}nav button.active{color:var(--yellow)}
+.notice{color:var(--muted);font-size:12px;line-height:1.45}.empty{color:var(--muted);font-size:14px;padding:10px 0}
+#toast{position:fixed;left:14px;right:14px;bottom:80px;background:#26384c;padding:12px;border-radius:12px;display:none;z-index:10}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">JT</div><div><h1>JT Electric</h1><p>Tu asistente de trabajo</p></div></div></header>
+<main>
+<div id="home">
+ <div class="welcome"><h2>¡Hola! Soy JT.</h2><p>Organiza clientes, trabajos, presupuestos y tareas desde un solo sitio.</p>
+ <div class="voice"><button id="voiceBtn">🎙 Hablar con JT</button><button class="secondary" id="speakBtn">🔊 Escuchar</button></div>
+ <p class="notice" style="margin-top:10px">La voz funciona mientras esta aplicación está abierta y el navegador lo permite. La activación permanente «Hola JT» con pantalla apagada requiere una aplicación Android nativa.</p></div>
+ <div class="grid">
+  <button class="tile" data-go="quotes">🧾<b>Presupuestos</b><small>Crear y calcular</small></button>
+  <button class="tile" data-go="clients">👥<b>Clientes</b><small>Contactos y datos</small></button>
+  <button class="tile" data-go="jobs">🛠<b>Trabajos</b><small>En curso y pendientes</small></button>
+  <button class="tile" data-go="tasks">⏰<b>Recordatorios</b><small>Lo que no debes olvidar</small></button>
+  <button class="tile" data-go="expenses">💶<b>Ingresos y gastos</b><small>Control básico</small></button>
+  <button class="tile" data-go="materials">📦<b>Materiales</b><small>Lista y precios</small></button>
+ </div>
+ <section class="panel"><h3>Próximos pendientes</h3><div id="homeTasks" class="empty">Todavía no tienes recordatorios.</div></section>
+</div>
+
+<div id="clients" class="view hidden">
+ <section class="panel"><h3>Nuevo cliente</h3><input id="cName" placeholder="Nombre del cliente"><div class="formrow"><input id="cPhone" placeholder="Teléfono"><input id="cEmail" placeholder="Correo"></div><input id="cAddress" placeholder="Dirección"><textarea id="cNotes" placeholder="Notas"></textarea><button id="addClient">Guardar cliente</button></section>
+ <section class="panel"><h3>Mis clientes</h3><div id="clientList" class="empty">No hay clientes guardados.</div></section>
+</div>
+
+<div id="jobs" class="view hidden">
+ <section class="panel"><h3>Registrar trabajo</h3><input id="jTitle" placeholder="Ej. Instalar enchufes en salón"><input id="jClient" placeholder="Cliente"><div class="formrow"><input id="jDate" type="date"><select id="jStatus"><option>Pendiente</option><option>En curso</option><option>Terminado</option></select></div><textarea id="jNotes" placeholder="Detalles del trabajo"></textarea><button id="addJob">Guardar trabajo</button></section>
+ <section class="panel"><h3>Trabajos registrados</h3><div id="jobList" class="empty">No hay trabajos guardados.</div></section>
+</div>
+
+<div id="quotes" class="view hidden">
+ <section class="panel"><h3>Crear presupuesto</h3><input id="qClient" placeholder="Cliente"><input id="qTitle" placeholder="Descripción del trabajo"><div class="formrow"><div><label class="muted">Mano de obra (€)</label><input id="qLabor" type="number" min="0" step=".01" value="0"></div><div><label class="muted">Materiales (€)</label><input id="qMaterial" type="number" min="0" step=".01" value="0"></div></div><div class="formrow"><div><label class="muted">Desplazamiento (€)</label><input id="qTravel" type="number" min="0" step=".01" value="0"></div><div><label class="muted">IVA (%)</label><input id="qVat" type="number" min="0" step=".01" value="0"></div></div><p><strong>Total estimado: <span id="qTotal">0,00 €</span></strong></p><button id="saveQuote">Guardar presupuesto</button></section>
+ <section class="panel"><h3>Presupuestos guardados</h3><div id="quoteList" class="empty">No hay presupuestos guardados.</div></section>
+</div>
+
+<div id="tasks" class="view hidden">
+ <section class="panel"><h3>Nuevo recordatorio</h3><input id="tTitle" placeholder="Ej. Llamar a cliente"><div class="formrow"><input id="tDate" type="date"><input id="tTime" type="time"></div><textarea id="tNotes" placeholder="Detalles (opcional)"></textarea><button id="addTask">Crear recordatorio</button></section>
+ <section class="panel"><h3>Mis recordatorios</h3><div id="taskList" class="empty">No hay recordatorios.</div></section>
+</div>
+
+<div id="expenses" class="view hidden">
+ <section class="panel"><h3>Anotar movimiento</h3><select id="eType"><option>Ingreso</option><option>Gasto</option></select><input id="eDesc" placeholder="Concepto"><input id="eAmount" type="number" min="0" step=".01" placeholder="Importe (€)"><button id="addExpense">Guardar movimiento</button></section>
+ <section class="panel"><h3>Resumen</h3><p>Ingresos: <strong id="income">0,00 €</strong></p><p>Gastos: <strong id="outcome">0,00 €</strong></p><p>Balance: <strong id="balance">0,00 €</strong></p><div id="expenseList"></div></section>
+</div>
+
+<div id="materials" class="view hidden">
+ <section class="panel"><h3>Añadir material</h3><input id="mName" placeholder="Ej. Cable 2,5 mm²"><div class="formrow"><input id="mPrice" type="number" min="0" step=".01" placeholder="Precio (€)"><input id="mStore" placeholder="Proveedor"></div><button id="addMaterial">Guardar material</button></section>
+ <section class="panel"><h3>Mi lista de materiales</h3><div id="materialList" class="empty">No hay materiales guardados.</div></section>
+</div>
+</main>
+<nav><button class="active" data-go="home">⌂<br>Inicio</button><button data-go="clients">👥<br>Clientes</button><button data-go="quotes">🧾<br>Presupuestos</button><button data-go="tasks">⏰<br>Tareas</button></nav>
+<div id="toast"></div>
+<script>
+const $=id=>document.getElementById(id), keys=['clients','jobs','quotes','tasks','expenses','materials'];
+const db={}; keys.forEach(k=>{try{db[k]=JSON.parse(localStorage.getItem('jt_'+k)||'[]')}catch{db[k]=[]}});
+const save=k=>localStorage.setItem('jt_'+k,JSON.stringify(db[k]));
+const money=n=>(Number(n)||0).toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2600)}
+function go(id){$('home').classList.toggle('hidden',id!=='home');document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hidden',v.id!==id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));render()}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+function item(title,sub,buttons=''){return `<div class="item"><strong>${esc(title)}</strong><small>${esc(sub||'')}</small>${buttons?`<div class="actions">${buttons}</div>`:''}</div>`}
+function render(){
+ $('clientList').innerHTML=db.clients.map((x,i)=>item(x.name,`${x.phone||''} ${x.email||''} ${x.address||''}`,`<button class="secondary" onclick="wa(${i})">WhatsApp</button><button class="secondary" onclick="mail(${i})">Correo</button><button class="danger" onclick="del('clients',${i})">Borrar</button>`)).join('')||'<div class="empty">No hay clientes guardados.</div>';
+ $('jobList').innerHTML=db.jobs.map((x,i)=>item(x.title,`${x.client||'Sin cliente'} · ${x.date||'Sin fecha'} · ${x.status}`,`<button class="secondary" onclick="cycleJob(${i})">Cambiar estado</button><button class="danger" onclick="del('jobs',${i})">Borrar</button>`)).join('')||'<div class="empty">No hay trabajos guardados.</div>';
+ $('quoteList').innerHTML=db.quotes.map((x,i)=>item(x.title,`${x.client} · ${money(x.total)}`,`<button class="secondary" onclick="shareQuote(${i})">Compartir</button><button class="danger" onclick="del('quotes',${i})">Borrar</button>`)).join('')||'<div class="empty">No hay presupuestos guardados.</div>';
+ $('taskList').innerHTML=db.tasks.map((x,i)=>item((x.done?'✓ ':'')+x.title,`${x.date||'Sin fecha'} ${x.time||''} ${x.notes||''}`,`<button class="secondary" onclick="doneTask(${i})">${x.done?'Reabrir':'Completar'}</button><button class="danger" onclick="del('tasks',${i})">Borrar</button>`)).join('')||'<div class="empty">No hay recordatorios.</div>';
+ const upcoming=db.tasks.filter(x=>!x.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')).slice(0,4);
+ $('homeTasks').innerHTML=upcoming.map(x=>item(x.title,`${x.date||'Sin fecha'} ${x.time||''}`)).join('')||'Todavía no tienes recordatorios pendientes.';
+ const inc=db.expenses.filter(x=>x.type==='Ingreso').reduce((s,x)=>s+x.amount,0),out=db.expenses.filter(x=>x.type==='Gasto').reduce((s,x)=>s+x.amount,0);
+ $('income').textContent=money(inc);$('outcome').textContent=money(out);$('balance').textContent=money(inc-out);
+ $('expenseList').innerHTML=db.expenses.map((x,i)=>item(`${x.type}: ${x.desc}`,money(x.amount),`<button class="danger" onclick="del('expenses',${i})">Borrar</button>`)).join('');
+ $('materialList').innerHTML=db.materials.map((x,i)=>item(x.name,`${money(x.price)} · ${x.store||'Sin proveedor'}`,`<button class="danger" onclick="del('materials',${i})">Borrar</button>`)).join('')||'<div class="empty">No hay materiales guardados.</div>';
+}
+function del(k,i){db[k].splice(i,1);save(k);render()}
+function wa(i){let p=(db.clients[i].phone||'').replace(/\D/g,'');if(!p)return toast('Añade un teléfono al cliente');location.href='https://wa.me/'+p}
+function mail(i){let e=db.clients[i].email;if(e)location.href='mailto:'+e;else toast('Añade un correo al cliente')}
+function cycleJob(i){let a=['Pendiente','En curso','Terminado'];db.jobs[i].status=a[(a.indexOf(db.jobs[i].status)+1)%3];save('jobs');render()}
+function doneTask(i){db.tasks[i].done=!db.tasks[i].done;save('tasks');render()}
+function shareQuote(i){let q=db.quotes[i],txt=`Presupuesto JT Electric\\nCliente: ${q.client}\\nTrabajo: ${q.title}\\nMano de obra: ${money(q.labor)}\\nMateriales: ${money(q.material)}\\nDesplazamiento: ${money(q.travel)}\\nIVA: ${q.vat}%\\nTOTAL: ${money(q.total)}\\n\\nPresupuesto sujeto a comprobación del trabajo y condiciones en la visita.`;if(navigator.share)navigator.share({text:txt}).catch(()=>{});else{navigator.clipboard?.writeText(txt);toast('Texto copiado para compartir')}}
+$('addClient').onclick=()=>{if(!$('cName').value.trim())return toast('Escribe el nombre del cliente');db.clients.push({name:$('cName').value,phone:$('cPhone').value,email:$('cEmail').value,address:$('cAddress').value,notes:$('cNotes').value});save('clients');['cName','cPhone','cEmail','cAddress','cNotes'].forEach(x=>$(x).value='');render();toast('Cliente guardado')};
+$('addJob').onclick=()=>{if(!$('jTitle').value.trim())return toast('Escribe el trabajo');db.jobs.push({title:$('jTitle').value,client:$('jClient').value,date:$('jDate').value,status:$('jStatus').value,notes:$('jNotes').value});save('jobs');['jTitle','jClient','jDate','jNotes'].forEach(x=>$(x).value='');render();toast('Trabajo guardado')};
+function calc(){let base=['qLabor','qMaterial','qTravel'].reduce((s,id)=>s+(Number($(id).value)||0),0);$('qTotal').textContent=money(base*(1+(Number($('qVat').value)||0)/100))}
+['qLabor','qMaterial','qTravel','qVat'].forEach(id=>$(id).addEventListener('input',calc));
+$('saveQuote').onclick=()=>{let labor=+ $('qLabor').value||0,material=+$('qMaterial').value||0,travel=+$('qTravel').value||0,vat=+$('qVat').value||0;if(!$('qTitle').value.trim())return toast('Describe el trabajo');db.quotes.push({client:$('qClient').value,title:$('qTitle').value,labor,material,travel,vat,total:(labor+material+travel)*(1+vat/100)});save('quotes');['qClient','qTitle'].forEach(x=>$(x).value='');['qLabor','qMaterial','qTravel'].forEach(x=>$(x).value=0);calc();render();toast('Presupuesto guardado')};
+$('addTask').onclick=()=>{if(!$('tTitle').value.trim())return toast('Escribe el recordatorio');db.tasks.push({title:$('tTitle').value,date:$('tDate').value,time:$('tTime').value,notes:$('tNotes').value,done:false});save('tasks');['tTitle','tDate','tTime','tNotes'].forEach(x=>$(x).value='');render();toast('Recordatorio guardado')};
+$('addExpense').onclick=()=>{if(!$('eDesc').value.trim()||!$('eAmount').value)return toast('Completa concepto e importe');db.expenses.push({type:$('eType').value,desc:$('eDesc').value,amount:+$('eAmount').value});save('expenses');$('eDesc').value='';$('eAmount').value='';render();toast('Movimiento guardado')};
+$('addMaterial').onclick=()=>{if(!$('mName').value.trim())return toast('Escribe el material');db.materials.push({name:$('mName').value,price:+$('mPrice').value||0,store:$('mStore').value});save('materials');['mName','mPrice','mStore'].forEach(x=>$(x).value='');render();toast('Material guardado')};
+function say(t){if('speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+$('speakBtn').onclick=()=>say('Hola, soy JT Electric. ¿Qué necesitas?');
+function voice(){let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('El reconocimiento de voz no está disponible en este navegador. Prueba Chrome.');return}let r=new SR();r.lang='es-ES';r.interimResults=false;r.onresult=e=>{let t=e.results[0][0].transcript.toLowerCase();say('Te he entendido: '+t);toast('Has dicho: '+t);if(t.includes('presupuesto'))go('quotes');else if(t.includes('cliente'))go('clients');else if(t.includes('trabajo'))go('jobs');else if(t.includes('recordatorio')||t.includes('pendiente'))go('tasks');else if(t.includes('material'))go('materials');else if(t.includes('ingreso')||t.includes('gasto'))go('expenses');};r.onerror=()=>toast('No he podido escucharte. Comprueba el permiso del micrófono.');r.start()}
+$('voiceBtn').onclick=voice;
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();
+</script>
+</body></html>

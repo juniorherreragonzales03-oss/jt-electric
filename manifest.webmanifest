@@ -1,0 +1,10 @@
+{
+  "name": "JT Electric",
+  "short_name": "JT Electric",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#111827",
+  "description": "Gestión de clientes, presupuestos y trabajos de JT Electric",
+  "icons": []
+}
